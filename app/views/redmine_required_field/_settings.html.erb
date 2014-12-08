@@ -1,0 +1,74 @@
+
+<fieldset>
+  <legend>
+    <%= h l('time_entry.general_settings') %>
+  </legend>
+
+  <div class="tabular settings">
+    <p>
+      <%= content_tag :label, l('time_entry.all_project_required') %>
+      <%= check_box_tag 'settings[time_entry][all_project_required]', 1, settings[:time_entry][:all_project_required] %>
+    </p>
+
+    <p>
+      <%= content_tag :label, l('time_entry.all_status_required') %>
+      <%= check_box_tag 'settings[time_entry][all_status_required]', 1, settings[:time_entry][:all_status_required] %>
+    </p>
+
+    <p>
+      <%= content_tag :label, l('time_entry.all_closed_status_required') %>
+      <%= check_box_tag 'settings[time_entry][closed_status_required]', 1, settings[:time_entry][:closed_status_required] %>
+    </p>
+  </div>
+</fieldset>
+
+<br>
+<fieldset>
+  <legend>
+    <%= h l('time_entry.required_statuses') %>
+  </legend>
+
+  <div class="tabular settings">
+    <%
+      IssueStatus.all.each do |status|
+        status_name = status.name
+        status_name += ' (*)' if status.is_closed
+        status_value = settings[:time_entry][:required_status][status.id.to_s]
+        status_param_key = "settings[time_entry][required_status][#{status.id.to_s}]"
+    %>
+      <p>
+        <%= content_tag :label, status_name %>
+        <%= check_box_tag status_param_key, 1, status_value %>
+      </p>
+    <% end %>
+
+    <span>(*) = <%= l('time_entry.closed_status') %></span>
+    <!-- make sure we always have required_status key in hash -->
+    <input type="hidden" name="settings[time_entry][required_status][0]" value="0" />
+  </div>
+</fieldset>
+
+<br>
+<fieldset>
+  <legend>
+    <%= h l('time_entry.required_projects') %>
+  </legend>
+
+  <div class="tabular settings">
+    <%
+      Project.active.order(:name).each do |project|
+        project_name = project.name
+        project_value = settings[:time_entry][:required_project][project.id.to_s]
+        project_param_key = "settings[time_entry][required_project][#{project.id.to_s}]"
+    %>
+      <p>
+        <%= content_tag :label, project_name %>
+        <%= check_box_tag project_param_key, 1, project_value %>
+      </p>
+    <% end %>
+
+    <!-- make sure we always have required_project key in hash -->
+    <input type="hidden" name="settings[time_entry][required_project][0]" value="0" />
+  </div>
+</fieldset>
+

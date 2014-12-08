@@ -1,0 +1,12 @@
+# Turkish strings go here for Rails i18n
+tr:
+  time_entry:
+    general_settings: Genel ayarlar
+    time_entry_is_required: Zaman kaydı girilmesi zorunludur
+    required_statuses: Zaman kaydı zorunlu durumlar
+    required_projects: Zaman kaydı zorunlu projeler
+    closed_status: kapalı durum
+    all_closed_status_required: Tüm kapalı durumlar zorunlu olsun
+    all_status_required: Tüm durumlar zorunlu olsun
+    all_project_required: Tüm projelerde geçerli
+

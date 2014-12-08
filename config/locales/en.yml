@@ -1,0 +1,12 @@
+# English strings go here for Rails i18n
+en:
+  time_entry:
+    general_settings: General settings
+    time_entry_is_required: Time entry is required
+    required_statuses: Time entry required statuses
+    required_projects: Time entry required projects
+    closed_status: closed status
+    all_closed_status_required: All closed status are required
+    all_status_required: All status are required
+    all_project_required: Active in all projects
+
