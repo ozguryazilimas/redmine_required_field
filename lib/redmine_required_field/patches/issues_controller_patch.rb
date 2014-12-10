@@ -21,27 +21,29 @@ module RedmineRequiredField
           rrf_check = false
 
           if params.has_key?(:time_entry)
-            settings = Setting[:plugin_redmine_required_field]
-            rrf_projects = settings[:time_entry][:required_project]
-            rrf_all_project_required = settings[:time_entry][:all_project_required].to_i
-            should_decide_to_check = (rrf_all_project_required == 1) || (rrf_projects[@issue.project.id.to_s].to_i == 1)
+            settings = Setting[:plugin_redmine_required_field][:time_entry]
+            rrf_projects = settings[:required_project]
+            rrf_all_project_required = settings[:all_project_required]
+            should_decide_to_check = rrf_all_project_required || rrf_projects[@issue.project.id.to_s]
+            Rails.logger.debug "RRF should_decide_to_check #{should_decide_to_check.inspect}"
 
             if should_decide_to_check
               status = IssueStatus.find(params[:issue][:status_id])
-              check_all_status = settings[:time_entry][:all_status_required].to_i == 1
-              check_closed_status = settings[:time_entry][:closed_status_required].to_i == 1
-              required_status = settings[:time_entry][:required_status]
+              check_all_status = settings[:all_status_required]
+              check_closed_status = settings[:closed_status_required]
+              required_status = settings[:required_status]
 
               if check_all_status
                 rrf_check = true
               elsif check_closed_status && status.is_closed
                 rrf_check = true
               else
-                rrf_check = required_status[status.id.to_s].to_i == 1
+                rrf_check = required_status[status.id.to_s]
               end
             end
           end
 
+          Rails.logger.debug "RRF rrf_check #{rrf_check.inspect}"
           if rrf_check && params[:time_entry][:hours].blank?
             flash[:error] = l('time_entry.time_entry_is_required')
             find_issue

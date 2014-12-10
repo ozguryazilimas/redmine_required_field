@@ -12,11 +12,11 @@ Redmine::Plugin.register :redmine_required_field do
   settings :partial => 'redmine_required_field/settings',
     :default => {
       :time_entry => {
-        :required_project => {0 => false},
-        :required_status => {0 => false},
-        :closed_status_required => true,
-        :all_status_required => false,
-        :all_project_required => true
+        :required_project => {},
+        :required_status => {},
+        :closed_status_required => nil,
+        :all_status_required => nil,
+        :all_project_required => nil
       }
     }
 end
