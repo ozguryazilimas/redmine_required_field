@@ -1,3 +1,4 @@
+require 'redmine'
 require 'redmine_required_field'
 
 Redmine::Plugin.register :redmine_required_field do
