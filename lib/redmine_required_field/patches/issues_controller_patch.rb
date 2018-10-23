@@ -4,15 +4,10 @@ module RedmineRequiredField
   module Patches
     module IssuesControllerPatch
       def self.included(base)
-        base.extend(ClassMethods)
         base.send(:include, InstanceMethods)
         base.class_eval do
-          unloadable
           alias_method_chain :update, :redmine_required_field
         end
-      end
-
-      module ClassMethods
       end
 
       module InstanceMethods
