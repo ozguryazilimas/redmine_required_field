@@ -1,74 +1,136 @@
 
-<fieldset>
-  <legend>
-    <%= h l('time_entry.general_settings') %>
-  </legend>
+<%
+  rrf_all_trackers = RedmineRequiredField.related_tracker_options
+  rrf_all_issue_statuses = RedmineRequiredField.related_issue_status_options
+  rrf_all_projects = RedmineRequiredField.related_project_options
+  rrf_issue_required = RedmineRequiredField.settings_issue_required
+%>
 
-  <div class="tabular settings">
-    <p>
-      <%= content_tag :label, l('time_entry.all_project_required') %>
-      <%= check_box_tag 'settings[time_entry][all_project_required]', 1, settings[:time_entry][:all_project_required] %>
-    </p>
+<%= hidden_field_tag 'settings[issue_required]', rrf_issue_required %>
 
-    <p>
-      <%= content_tag :label, l('time_entry.all_status_required') %>
-      <%= check_box_tag 'settings[time_entry][all_status_required]', 1, settings[:time_entry][:all_status_required] %>
-    </p>
+<div class='tabular settings'>
 
-    <p>
-      <%= content_tag :label, l('time_entry.all_closed_status_required') %>
-      <%= check_box_tag 'settings[time_entry][closed_status_required]', 1, settings[:time_entry][:closed_status_required] %>
-    </p>
-  </div>
-</fieldset>
+  <fieldset class="box">
+    <legend>
+      <b>
+        <%= l('redmine_required_field.settings.issues_matching_will_require_time_entry') %>
+      </b>
+    </legend>
 
-<br>
-<fieldset>
-  <legend>
-    <%= h l('time_entry.required_statuses') %>
-  </legend>
+    <br>
 
-  <div class="tabular settings">
-    <%
-      IssueStatus.all.each do |status|
-        status_name = status.name
-        status_name += ' (*)' if status.is_closed
-        status_value = settings[:time_entry][:required_status][status.id.to_s]
-        status_param_key = "settings[time_entry][required_status][#{status.id.to_s}]"
-    %>
+    <table id='rrf_issue_required' class='list'>
+      <thead>
+        <tr>
+          <th><%= t(:label_project_plural) %></th>
+          <th><%= t(:label_tracker_plural) %></th>
+          <th><%= t(:label_issue_status_plural) %></th>
+          <th></th>
+        </tr>
+      </thead>
+
+      <tbody>
+      </tbody>
+    </table>
+
+  </fieldset>
+
+  <fieldset class="box">
+    <legend>
+      <b>
+        <%= l('redmine_required_field.settings.add_issue_matchers') %>
+      </b>
+    </legend>
+
+    <div id='rrf_issue_required_form' class='tabular settings'>
+
       <p>
-        <%= content_tag :label, status_name %>
-        <%= check_box_tag status_param_key, 1, status_value %>
+        <%= content_tag :label, t(:label_project_plural) %>
+        <%= select_tag 'rrf_responsive_setting[project_ids]', options_for_select(rrf_all_projects), :multiple => true, :size => 30 %>
       </p>
-    <% end %>
 
-    <span>(*) = <%= l('time_entry.closed_status') %></span>
-    <!-- make sure we always have required_status key in hash -->
-    <input type="hidden" name="settings[time_entry][required_status][0]" value="0" />
-  </div>
-</fieldset>
-
-<br>
-<fieldset>
-  <legend>
-    <%= h l('time_entry.required_projects') %>
-  </legend>
-
-  <div class="tabular settings">
-    <%
-      Project.active.order(:name).each do |project|
-        project_name = project.name
-        project_value = settings[:time_entry][:required_project][project.id.to_s]
-        project_param_key = "settings[time_entry][required_project][#{project.id.to_s}]"
-    %>
       <p>
-        <%= content_tag :label, project_name %>
-        <%= check_box_tag project_param_key, 1, project_value %>
+        <%= content_tag :label, t(:label_tracker_plural) %>
+        <%= select_tag 'rrf_responsive_setting[tracker_ids]', options_for_select(rrf_all_trackers), :multiple => true, :size => 30 %>
       </p>
-    <% end %>
 
-    <!-- make sure we always have required_project key in hash -->
-    <input type="hidden" name="settings[time_entry][required_project][0]" value="0" />
-  </div>
-</fieldset>
+      <p>
+        <%= content_tag :label, t(:label_issue_status_plural) %>
+        <%= select_tag 'rrf_responsive_setting[issue_status_ids]', options_for_select(rrf_all_issue_statuses), :multiple => true, :size => 30 %>
+      </p>
+
+      <br>
+      <span>(*) = <%= l('redmine_required_field.closed_status') %></span>
+      <br>
+
+      <p>
+        <%= submit_tag l(:button_add), :name => :responsive_update, :id => :responsive_update %>
+      </p>
+
+     </div>
+
+  </fieldset>
+</div>
+
+
+<%= javascript_tag do %>
+
+  var rrf_current_issue_required = <%= raw (rrf_issue_required.presence || []).to_json %>;
+  var rrf_issue_statuses = <%= raw rrf_all_issue_statuses.map(&:reverse).to_h.to_json %>;
+  var rrf_trackers = <%= raw rrf_all_trackers.map(&:reverse).to_h.to_json %>;
+  var rrf_projects = <%= raw rrf_all_projects.map(&:reverse).to_h.to_json %>;
+
+  function rrf_redraw_issue_required() {
+    var table_body = '';
+
+    $.each(rrf_current_issue_required, function(ix, data) {
+      table_body += '<tr>' +
+        '<td>' + $.map(data.project_ids, function(k, ix) {return rrf_projects[k]}).join('<br>') + '</td>' +
+        '<td>' + $.map(data.tracker_ids, function(k, ix) {return rrf_trackers[k]}).join('<br>') + '</td>' +
+        '<td>' + $.map(data.issue_status_ids, function(k, ix) {return rrf_issue_statuses[k]}).join('<br>') + '</td>' +
+        '<td><a class="icon icon-del rrf_issue_required_delete" data-issue_required_index_id="' + ix + '">&nbsp;</a></td>' +
+        '</tr>';
+    });
+
+    $('#settings_issue_required').val(JSON.stringify(rrf_current_issue_required));
+    $('table#rrf_issue_required tbody').html(table_body);
+
+    return false;
+  }
+
+  function update_rrf_data() {
+    var setting_project_ids = $('#rrf_responsive_setting_project_ids').val();
+    var setting_tracker_ids = $('#rrf_responsive_setting_tracker_ids').val();
+    var setting_issue_status_ids = $('#rrf_responsive_setting_issue_status_ids').val();
+
+    rrf_current_issue_required.push({
+      project_ids: (setting_project_ids || []),
+      tracker_ids: (setting_tracker_ids || []),
+      issue_status_ids: (setting_issue_status_ids || [])
+    });
+
+    rrf_redraw_issue_required();
+
+    return false;
+  }
+
+
+  function rrf_setup_bindings() {
+    $(document).on('click', '#responsive_update', update_rrf_data);
+
+    $(document).on('click', '.rrf_issue_required_delete', function(e) {
+      var index_to_delete = $(this).data('issue_required_index_id');
+      rrf_current_issue_required.splice(index_to_delete, 1);
+      rrf_redraw_issue_required();
+
+      return false;
+    });
+  }
+
+  $(function() {
+    rrf_setup_bindings();
+    rrf_redraw_issue_required();
+  });
+
+<% end %>
 

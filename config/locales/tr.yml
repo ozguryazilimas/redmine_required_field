@@ -1,12 +1,9 @@
-# Turkish strings go here for Rails i18n
+
 tr:
-  time_entry:
-    general_settings: Genel ayarlar
-    time_entry_is_required: Zaman kaydı girilmesi zorunludur
-    required_statuses: Zaman kaydı zorunlu durumlar
-    required_projects: Zaman kaydı zorunlu projeler
+  redmine_required_field:
     closed_status: kapalı durum
-    all_closed_status_required: Tüm kapalı durumlar zorunlu olsun
-    all_status_required: Tüm durumlar zorunlu olsun
-    all_project_required: Tüm projelerde geçerli
+    settings:
+      add_issue_matchers: İş eşleştiricileri ekleyiniz
+      issues_matching_will_require_time_entry: Eşleşen iş kayıtlarında  zaman kaydı girilmesi zorunlu olacak
+    time_entry_is_required: Zaman kaydı girilmesi zorunludur
 
