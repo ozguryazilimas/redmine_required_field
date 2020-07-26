@@ -28,7 +28,7 @@ module RedmineRequiredField
           Rails.logger.debug "RRF rrf_should_check_time_entry_hours #{rrf_should_check_time_entry_hours.inspect}"
 
           if rrf_should_check_time_entry_hours && params[:time_entry][:hours].blank?
-            flash[:error] = l('redmine_required_field.spent_time_is_required_for_this_issue')
+            flash.now[:error] = l('redmine_required_field.spent_time_is_required_for_this_issue')
             find_issue
             update_issue_from_params
             render :action => 'edit'
