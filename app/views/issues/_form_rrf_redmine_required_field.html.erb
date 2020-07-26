@@ -57,6 +57,14 @@
 
         rrf_setting_update_time_entry_hours_is_required();
 
+        $(document).on('change', '#issue_status_id', function(e) {
+          rrf_setting_update_time_entry_hours_is_required();
+        });
+
+        $(document).on('change', '#issue_tracker_id', function(e) {
+          rrf_setting_update_time_entry_hours_is_required();
+        });
+
       });
 
     // }

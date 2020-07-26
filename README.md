@@ -5,6 +5,8 @@ Allows forcing users to fill spent time fields during updating issues. During is
 if issue status is one of the statuses configured in the plugin settings, spent time field
 is marked as required. On changing issue form fields spent time is marked as required dynamically.
 
+This plugin is compatible with Redmine 4.x. If you want to use it with Redmine 3.x please use redmine3 branch.
+
 
 ## Configuration
 

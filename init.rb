@@ -6,10 +6,10 @@ Redmine::Plugin.register :redmine_required_field do
   name 'Redmine Required Field plugin'
   author 'Onur Kucuk'
   description 'Redmine plugin to customize how some issue fields will be required'
-  version '0.9.0'
+  version '1.0.0'
   url 'http://www.ozguryazilim.com.tr'
   author_url 'http://www.ozguryazilim.com.tr'
-  requires_redmine :version_or_higher => '3.3.0'
+  requires_redmine :version_or_higher => '4.0.0'
 
   settings :partial => 'redmine_required_field/settings',
     :default => {
