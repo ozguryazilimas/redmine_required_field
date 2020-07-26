@@ -1,7 +1,8 @@
 
 en:
   redmine_required_field:
-    closed_status: closed status
+    closed_status: Closed status
+    need_to_click_apply_to_save_settings: You need to click Apply below to save your settings
     settings:
       add_issue_matchers: Add issue matchers
       issues_matching_will_require_time_entry: Matching issues will require time entries
