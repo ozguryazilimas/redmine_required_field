@@ -1,0 +1,68 @@
+
+<%
+  #
+  # Note that everytime tracker or status select changes value, Redmine reloads the form with XHR.
+  # We are simply hooking into that reload mechanism to recheck if we need to update time entry field required attribute
+  #
+  rrf_issue_required = RedmineRequiredField.settings_issue_required_for_project(@issue.try(:project_id) || @project.try(:id))
+
+  if rrf_issue_required.present?
+%>
+
+  <%= javascript_tag do %>
+
+    // if (typeof rrf_add_required_to_time_entry_hours === 'undefined') {
+
+      var rrf_issue_required_settings = <%= raw rrf_issue_required.to_json %>;
+
+      function rrf_add_required_to_time_entry_hours() {
+        rrf_remove_required_from_time_entry_hours();
+        $('label[for=time_entry_hours]').append('<span class="required"> *</span>');
+      }
+
+      function rrf_remove_required_from_time_entry_hours() {
+        $('label[for=time_entry_hours] span.required').remove();
+      }
+
+      function rrf_setting_values_match_id(rrf_setting, value) {
+        if ($.isEmptyObject(rrf_setting)) {
+          return true;
+        }
+
+        var has_value = rrf_setting.indexOf(value.toString()) > -1;
+        return has_value;
+      }
+
+      function rrf_setting_update_time_entry_hours_is_required() {
+        var issue_status_id = $('#issue_status_id').val();
+        var issue_tracker_id = $('#issue_tracker_id').val();
+
+        var matching_settings = $.grep(rrf_issue_required_settings, function(data) {
+          var matches_tracker = rrf_setting_values_match_id(data.tracker_ids, issue_tracker_id);
+          var matches_status = rrf_setting_values_match_id(data.issue_status_ids, issue_status_id);
+
+          return matches_tracker && matches_status;
+        });
+
+        var is_enabled = matching_settings.length > 0;
+
+        if (is_enabled) {
+          rrf_add_required_to_time_entry_hours();
+        } else {
+          rrf_remove_required_from_time_entry_hours();
+        }
+      }
+
+      $(function() {
+
+        rrf_setting_update_time_entry_hours_is_required();
+
+      });
+
+    // }
+
+  <% end %>
+
+<% end %>
+
+

@@ -5,5 +5,5 @@ tr:
     settings:
       add_issue_matchers: İş eşleştiricileri ekleyiniz
       issues_matching_will_require_time_entry: Eşleşen iş kayıtlarında  zaman kaydı girilmesi zorunlu olacak
-    time_entry_is_required: Zaman kaydı girilmesi zorunludur
+    spent_time_is_required_for_this_issue: Bu iş için harcanan zaman girilmesi zorunludur
 

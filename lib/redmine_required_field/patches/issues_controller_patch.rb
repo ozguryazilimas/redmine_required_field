@@ -28,7 +28,7 @@ module RedmineRequiredField
           Rails.logger.debug "RRF rrf_should_check_time_entry_hours #{rrf_should_check_time_entry_hours.inspect}"
 
           if rrf_should_check_time_entry_hours && params[:time_entry][:hours].blank?
-            flash[:error] = l('redmine_required_field.time_entry_is_required')
+            flash[:error] = l('redmine_required_field.spent_time_is_required_for_this_issue')
             find_issue
             update_issue_from_params
             render :action => 'edit'
@@ -44,16 +44,18 @@ module RedmineRequiredField
 
 
         def rrf_params_match_settings(rrf_setting)
-          rrf_params_match_setting_for_id(rrf_setting[RedmineRequiredField::PROJECT_IDS], @issue.project_id) &&
-            rrf_params_match_setting_for_id(rrf_setting[RedmineRequiredField::ISSUE_STATUS_IDS], params[:issue][:status_id]) &&
-            rrf_params_match_setting_for_id(rrf_setting[RedmineRequiredField::TRACKER_IDS], params[:issue][:tracker_id])
-        end
+          setting_project_ids = rrf_setting[RedmineRequiredField::PROJECT_IDS]
+          matched = RedmineRequiredField.setting_values_match_id(setting_project_ids, @issue.project_id)
+          return false unless matched
 
-        def rrf_params_match_setting_for_id(rrf_setting, value)
-          return true if rrf_setting.blank?
-          return true if value.blank?
+          setting_tracker_ids = rrf_setting[RedmineRequiredField::TRACKER_IDS]
+          matched = RedmineRequiredField.setting_values_match_id(setting_tracker_ids, params[:issue][:tracker_id])
+          return false unless matched
 
-          rrf_setting.map(&:to_i).include?(value.to_i)
+          setting_issue_status_ids = rrf_setting[RedmineRequiredField::ISSUE_STATUS_IDS]
+          matched = RedmineRequiredField.setting_values_match_id(setting_issue_status_ids, params[:issue][:status_id])
+
+          matched
         end
 
       end

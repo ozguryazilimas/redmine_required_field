@@ -1,4 +1,7 @@
 
+require 'redmine_required_field/hooks/views_issues_hook'
+
+
 module RedmineRequiredField
 
   PLUGIN_NAME = 'redmine_required_field'.freeze
@@ -24,6 +27,21 @@ module RedmineRequiredField
     []
   end
 
+  def self.settings_issue_required_for_project(project)
+    return [] if project.blank?
+
+    project_id = project.is_a?(Project) ? project.id : project.to_i
+
+    matched = settings_issue_required.select do |setting|
+      setting_project_ids = setting[PROJECT_IDS]
+
+      setting_project_ids.blank? ||
+        setting_values_match_id(setting_project_ids, project_id)
+    end
+
+    matched.presence || []
+  end
+
   def self.related_issue_status_options
     IssueStatus.sorted.pluck(:name, :is_closed, :id).map do |raw_name, is_closed, id|
       extra_char = is_closed ? ISSUE_STATUS_CLOSED_MARK : nil
@@ -41,5 +59,12 @@ module RedmineRequiredField
     Tracker.sorted.pluck(:name, :id)
   end
 
+  def self.setting_values_match_id(rrf_setting, value)
+    return true if rrf_setting.blank?
+    # not for ids, but may need to enable for other attribute types
+    # return true if value.blank?
+
+    rrf_setting.map(&:to_i).include?(value.to_i)
+  end
 end
 
