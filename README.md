@@ -24,5 +24,5 @@ your configuration is not saved yet, you need to click Update at the bottom to u
 
 ## License
 
-Copyright (c) 2020 Onur Küçük. Licensed under [GNU GPLv2](LICENSE)
+Copyright (c) 2014 - 2020 Onur Küçük. Licensed under [GNU GPLv2](LICENSE)
 
