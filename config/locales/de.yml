@@ -1,0 +1,13 @@
+
+de:
+  redmine_required_field:
+    closed_status: Closed status
+    need_to_click_apply_to_save_settings: Anwenden klicken, um die Änderungen anzuwenden
+    settings:
+      add_issue_matchers: Auswahlkriterium hinzufügen
+      issues_matching_will_require_time_entry: Zutreffende Tickets müssen bei Änderungen mit einer Zeitaufwandsangabe versehen werden
+      exclude_roles: Angegebene Rollen von der Verpflichtung zur Angabe der Zeit ausschließen
+      check_assignee_only: Nur anwenden wenn Bearbeitung durch Person die "Zugewiesen an:" gleicht
+    spent_time_is_required_for_this_issue: Angabe zum Zeitaufwand wird benötigt
+
+

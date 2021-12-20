@@ -13,7 +13,10 @@ module RedmineRequiredField
   PROJECT_IDS = 'project_ids'.freeze
   TRACKER_IDS = 'tracker_ids'.freeze
   ISSUE_STATUS_IDS = 'issue_status_ids'.freeze
-
+  ROLE_IDS = 'role_ids'.freeze
+  SETTINGS = 'rrf_settings'.freeze
+  ROLE_EXCLUDED = 'role_excluded'.freeze
+  CHECK_ASSIGNEE_ONLY = 'check_assignee_only'.freeze
 
   def self.settings
     HashWithIndifferentAccess.new(Setting[:plugin_redmine_required_field])
@@ -59,6 +62,10 @@ module RedmineRequiredField
     Tracker.sorted.pluck(:name, :id)
   end
 
+  def self.related_roles
+    Role.sorted.pluck(:name, :id)
+  end
+
   def self.setting_values_match_id(rrf_setting, value)
     return true if rrf_setting.blank?
     # not for ids, but may need to enable for other attribute types
@@ -66,5 +73,19 @@ module RedmineRequiredField
 
     rrf_setting.map(&:to_i).include?(value.to_i)
   end
+  def self.current_roles
+    User.current.roles.sorted.pluck(:name,:id)
+  end
+  def self.setting_values_contain_ids(rrf_setting, arr)
+    return true if rrf_setting.blank?
+    # not for ids, but may need to enable for other attribute types
+    # return true if value.blank?
+    idary = Array.new
+    arr.each do |elem|
+      idary.push(elem[1])
+    end
+    (rrf_setting.map(&:to_i) & idary).any?
+  end
+
 end
 

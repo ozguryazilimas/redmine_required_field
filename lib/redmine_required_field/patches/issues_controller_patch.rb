@@ -36,6 +36,30 @@ module RedmineRequiredField
 
 
       def rrf_params_match_settings(rrf_setting)
+        #check role and assignee behavior(negate match for given roles if checkbox is set, and only apply filter if attached to only is set and user matches attached to )
+        user_is_assigned_to = User.current.id==@issue.assigned_to_id
+        if rrf_setting[RedmineRequiredField::ROLE_EXCLUDED] == '1'
+
+          if rrf_setting[RedmineRequiredField::CHECK_ASSIGNEE_ONLY] =='1'
+            if !user_is_assigned_to
+              return false
+            else
+              setting_role_ids = rrf_setting[RedmineRequiredField::ROLE_IDS]
+              matched = !RedmineRequiredField.setting_values_contain_ids(setting_role_ids, RedmineRequiredField.current_roles)
+            return false unless matched
+            end
+          end
+        else
+          if rrf_setting[RedmineRequiredField::CHECK_ASSIGNEE_ONLY]='1'
+            if !user_is_assigned_to
+              return false
+            else
+              setting_role_ids = rrf_setting[RedmineRequiredField::ROLE_IDS]
+              matched = RedmineRequiredField.setting_values_contain_ids(setting_role_ids, RedmineRequiredField.current_roles)
+            return false unless matched
+            end
+          end
+        end
         setting_project_ids = rrf_setting[RedmineRequiredField::PROJECT_IDS]
         matched = RedmineRequiredField.setting_values_match_id(setting_project_ids, @issue.project_id)
         return false unless matched
@@ -46,7 +70,7 @@ module RedmineRequiredField
 
         setting_issue_status_ids = rrf_setting[RedmineRequiredField::ISSUE_STATUS_IDS]
         matched = RedmineRequiredField.setting_values_match_id(setting_issue_status_ids, params[:issue][:status_id])
-
+        
         matched
       end
 
