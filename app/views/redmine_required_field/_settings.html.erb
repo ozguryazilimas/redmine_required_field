@@ -5,42 +5,19 @@
   rrf_all_projects = RedmineRequiredField.related_project_options
   rrf_all_roles = RedmineRequiredField.related_roles
   rrf_issue_required = RedmineRequiredField.settings_issue_required
-  rrf_settings_label = [[l('redmine_required_field.settings.exclude_roles'), 0],[l('redmine_required_field.settings.check_assignee_only'),1]]
-  
   current_roles = RedmineRequiredField.current_roles
 %>
 
 <%= hidden_field_tag 'settings[issue_required]', rrf_issue_required %>
-<%= rrf_all_roles%>
 
 <div class='tabular settings'>
-  <fieldset class="box">
-    <legend>
-      <b>
-        Ihre derzeitig zugewiesenen Rollen
-      </b>
-    </legend>
-    <table id="current_roles">
-      <tbody>
-    <%current_roles.each do |elem|%>
-      <tr>
-        <td><%=elem[0]%></td>
-        <td>(<%=elem[1]%>)</td>
-      </tr>
-    <%end%>
-    </tbody>
-    </table>
-  </fieldset>
-
   <fieldset class="box">
     <legend>
       <b>
         <%= l('redmine_required_field.settings.issues_matching_will_require_time_entry') %>
       </b>
     </legend>
-
     <br>
-
     <table id='rrf_issue_required' class='list'>
       <thead>
         <tr>
@@ -92,21 +69,17 @@
       <br>
       <%= check_box_tag 'role_excluded' %>
       <%= label_tag 'role_excluded', l('redmine_required_field.settings.exclude_roles'),class:'inline' %>
-        
       
       <p>
         <%= submit_tag l(:button_add), :name => :responsive_update, :id => :responsive_update %>
         (**)
       </p>
 
-
       <br>
       <span>(*) = <%= l('redmine_required_field.closed_status') %></span>
       <br>
       <span>(**) = <%= l('redmine_required_field.need_to_click_apply_to_save_settings') %></span>
       <br>
-
-     
 
   </fieldset>
 </div>
@@ -119,12 +92,9 @@
   var rrf_trackers = <%= raw rrf_all_trackers.map(&:reverse).to_h.to_json %>;
   var rrf_projects = <%= raw rrf_all_projects.map(&:reverse).to_h.to_json %>;
   var rrf_roles = <%= raw rrf_all_roles.map(&:reverse).to_h.to_json %>;
-  
-  
 
   function rrf_redraw_issue_required() {
     var table_body = '';
-
     $.each(rrf_current_issue_required, function(ix, data) {
       console.log(data);
       table_body += '<tr>' +
@@ -152,8 +122,7 @@
 
     var setting_role_excluded = $('#role_excluded').is(':checked') ? "1":"0";
     var setting_check_assignee_only = $('#check_assignee_only').is(':checked') ? "1":"0";
-    console.log(setting_role_excluded);
-    console.log(setting_check_assignee_only);
+    
     rrf_current_issue_required.push({
       project_ids: (setting_project_ids || []),
       tracker_ids: (setting_tracker_ids || []),
@@ -162,7 +131,7 @@
       role_excluded: (setting_role_excluded),
       check_assignee_only: (setting_check_assignee_only)
     });
-    console.log(rrf_current_issue_required);
+    
     rrf_redraw_issue_required();
 
     return false;
