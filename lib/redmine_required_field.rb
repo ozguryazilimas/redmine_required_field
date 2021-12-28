@@ -80,10 +80,7 @@ module RedmineRequiredField
     return true if rrf_setting.blank?
     # not for ids, but may need to enable for other attribute types
     # return true if value.blank?
-    idary = Array.new
-    arr.each do |elem|
-      idary.push(elem[1])
-    end
+    idary = arr.map{|k| k[1]}
     (rrf_setting.map(&:to_i) & idary).any?
   end
 

@@ -6,8 +6,8 @@ tr:
     settings:
       add_issue_matchers: İş eşleştiricileri ekleyiniz
       issues_matching_will_require_time_entry: Eşleşen iş kayıtlarında  zaman kaydı girilmesi zorunlu olacak
-      exclude_roles: Rolleri zorunlu alanı doldurma zorunluluğundan hariç tutu
-      check_assignee_only: Only match for assignee
+      exclude_roles: Rolleri zorunlu alanı doldurma zorunluluğundan hariç tut
+      check_assignee_only: Sadece atanan ile eşleştir
     spent_time_is_required_for_this_issue: Bu iş için harcanan zaman girilmesi zorunludur
 
 
