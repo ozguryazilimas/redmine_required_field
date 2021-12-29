@@ -73,11 +73,14 @@ module RedmineRequiredField
 
     rrf_setting.map(&:to_i).include?(value.to_i)
   end
+
   def self.current_roles
     User.current.roles.sorted.pluck(:name,:id)
   end
+
   def self.setting_values_contain_ids(rrf_setting, arr)
     return true if rrf_setting.blank?
+
     # not for ids, but may need to enable for other attribute types
     # return true if value.blank?
     idary = arr.map{|k| k[1]}
