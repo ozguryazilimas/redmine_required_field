@@ -6,6 +6,8 @@ en:
     settings:
       add_issue_matchers: Add issue matchers
       issues_matching_will_require_time_entry: Matching issues will require time entries
+      exclude_roles: Exclude roles from being obligated to fill required field
+      check_assignee_only: Only match for assignee
     spent_time_is_required_for_this_issue: Spent time is required for this issue
 
 

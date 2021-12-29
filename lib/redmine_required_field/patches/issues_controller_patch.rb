@@ -36,6 +36,17 @@ module RedmineRequiredField
 
 
       def rrf_params_match_settings(rrf_setting)
+        #check role and assignee behavior(negate match for given roles if checkbox is set, and only apply filter if attached to only is set and user matches attached to )
+        if rrf_setting[RedmineRequiredField::CHECK_ASSIGNEE_ONLY] == '1'
+          return false if User.current.id != @issue.assigned_to_id
+        end
+        setting_role_ids = rrf_setting[RedmineRequiredField::ROLE_IDS]
+        matched = RedmineRequiredField.setting_values_contain_ids(setting_role_ids, RedmineRequiredField.current_roles)
+        if rrf_setting[RedmineRequiredField::ROLE_EXCLUDED] == '1'
+          matched = !matched
+        end
+        return false unless matched
+
         setting_project_ids = rrf_setting[RedmineRequiredField::PROJECT_IDS]
         matched = RedmineRequiredField.setting_values_match_id(setting_project_ids, @issue.project_id)
         return false unless matched
