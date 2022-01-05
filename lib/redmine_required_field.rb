@@ -75,7 +75,8 @@ module RedmineRequiredField
   end
 
   def self.current_roles
-    User.current.roles.sorted.pluck(:name,:id)
+    # postgresql complains order by is not in select if we fetch roles through user association
+    Role.where(:id => User.current.roles).sorted.pluck(:name,:id)
   end
 
   def self.setting_values_contain_ids(rrf_setting, arr)
