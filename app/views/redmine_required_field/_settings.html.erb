@@ -20,11 +20,11 @@
     <table id='rrf_issue_required' class='list'>
       <thead>
         <tr>
-          <th><%= content_tag :label, t(:label_project_plural) %></th>
-          <th><%= content_tag :label, t(:label_tracker_plural) %></th>
-          <th><%= content_tag :label, t(:label_issue_status_plural) %></th>
-          <th><%= content_tag :label, t(:label_role_plural) %></th>
-          <th><%= content_tag :label, t(:label_settings) %></th>
+          <th><%= t(:label_project_plural) %></th>
+          <th><%= t(:label_tracker_plural) %></th>
+          <th><%= t(:label_issue_status_plural) %></th>
+          <th><%= t(:label_role_plural) %></th>
+          <th><%= t(:label_settings) %></th>
           <th></th>
         </tr>
       </thead>
@@ -43,32 +43,37 @@
     </legend>
 
     <div id='rrf_issue_required_form' class='tabular settings'>
-      <div style="display:flex; width:100%;" >
-        <p style="padding: 10px; display:flex;flex-direction: column;">
-          <%= content_tag :label, t(:label_project_plural) %>
-          <%= select_tag 'rrf_responsive_setting[project_ids]', options_for_select(rrf_all_projects), :multiple => true, :size => 30 %>
-        </p>
+      <p>
+        <%= content_tag :label, t(:label_project_plural) %>
+        <%= select_tag 'rrf_responsive_setting[project_ids]', options_for_select(rrf_all_projects), :multiple => true, :size => 30 %>
+      </p>
 
-        <p style="padding: 10px; display:flex;flex-direction: column;">
-          <%= content_tag :label, t(:label_tracker_plural) %>
-          <%= select_tag 'rrf_responsive_setting[tracker_ids]', options_for_select(rrf_all_trackers), :multiple => true, :size => 30 %>
-        </p>
+      <p>
+        <%= content_tag :label, t(:label_tracker_plural) %>
+        <%= select_tag 'rrf_responsive_setting[tracker_ids]', options_for_select(rrf_all_trackers), :multiple => true, :size => 30 %>
+      </p>
 
-        <p style="padding: 10px; display:flex;flex-direction: column;">
-          <%= content_tag :label, t(:label_issue_status_plural) %>
-          <%= select_tag 'rrf_responsive_setting[issue_status_ids]', options_for_select(rrf_all_issue_statuses), :multiple => true, :size => 30 %>
-        </p>
-        <p style="padding: 10px; display:flex;flex-direction: column;">
-          <%= content_tag :label, t(:label_role_plural) %>
-          <%= select_tag 'rrf_responsive_setting[role_ids]', options_for_select(rrf_all_roles), :multiple => true, :size => 30 %>
-        </p>
-      </div>
-      <%= check_box_tag 'check_assignee_only' %>
-      <%= label_tag 'check_assignee_only', l('redmine_required_field.settings.check_assignee_only'),class:'inline' %>
+      <p>
+        <%= content_tag :label, t(:label_issue_status_plural) %>
+        <%= select_tag 'rrf_responsive_setting[issue_status_ids]', options_for_select(rrf_all_issue_statuses), :multiple => true, :size => 30 %>
+      </p>
+
+      <p>
+        <%= content_tag :label, t(:label_role_plural) %>
+        <%= select_tag 'rrf_responsive_setting[role_ids]', options_for_select(rrf_all_roles), :multiple => true, :size => 30 %>
+      </p>
+
+      <p>
+        <%= check_box_tag 'check_assignee_only' %>
+        <%= label_tag 'check_assignee_only', l('redmine_required_field.settings.check_assignee_only'),class:'inline' %>
+      </p>
+
+      <p>
+        <%= check_box_tag 'role_excluded' %>
+        <%= label_tag 'role_excluded', l('redmine_required_field.settings.exclude_roles'),class:'inline' %>
+      </p>
+
       <br>
-      <%= check_box_tag 'role_excluded' %>
-      <%= label_tag 'role_excluded', l('redmine_required_field.settings.exclude_roles'),class:'inline' %>
-      
       <p>
         <%= submit_tag l(:button_add), :name => :responsive_update, :id => :responsive_update %>
         (**)
@@ -79,6 +84,8 @@
       <br>
       <span>(**) = <%= l('redmine_required_field.need_to_click_apply_to_save_settings') %></span>
       <br>
+
+    </div>
 
   </fieldset>
 </div>
@@ -120,7 +127,7 @@
 
     var setting_role_excluded = $('#role_excluded').is(':checked') ? "1" : "0";
     var setting_check_assignee_only = $('#check_assignee_only').is(':checked') ? "1" : "0";
-    
+
     rrf_current_issue_required.push({
       project_ids: (setting_project_ids || []),
       tracker_ids: (setting_tracker_ids || []),
@@ -129,7 +136,7 @@
       role_excluded: (setting_role_excluded),
       check_assignee_only: (setting_check_assignee_only)
     });
-    
+
     rrf_redraw_issue_required();
 
     return false;
