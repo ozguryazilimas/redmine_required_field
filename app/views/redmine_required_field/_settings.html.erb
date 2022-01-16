@@ -64,18 +64,27 @@
       </p>
 
       <p>
-        <%= check_box_tag 'check_assignee_only' %>
-        <%= label_tag 'check_assignee_only', l('redmine_required_field.settings.check_assignee_only'),class:'inline' %>
+        <%= content_tag :label, t('redmine_required_field.settings.check_assignee_only') %>
+        <%= check_box_tag 'rrf_responsive_setting[check_assignee_only]', 1, false %>
       </p>
 
       <p>
-        <%= check_box_tag 'role_excluded' %>
-        <%= label_tag 'role_excluded', l('redmine_required_field.settings.exclude_roles'),class:'inline' %>
+        <%= content_tag :label, t('redmine_required_field.settings.role_excluded') %>
+        <%= check_box_tag 'rrf_responsive_setting[role_excluded]', 1, false %>
       </p>
 
       <br>
       <p>
         <%= submit_tag l(:button_add), :name => :responsive_update, :id => :responsive_update %>
+        <%=
+          submit_tag t(:button_update), :name => :responsive_update_issue_required_update,
+            :id => :responsive_update_issue_required_update, :style => 'display: none;'
+        %>
+        <%=
+          submit_tag t(:button_cancel), :name => :responsive_update_issue_required_cancel,
+            :id => :responsive_update_issue_required_cancel, :style => 'display: none;'
+        %>
+
         (**)
       </p>
 
@@ -98,6 +107,7 @@
   var rrf_trackers = <%= raw rrf_all_trackers.map(&:reverse).to_h.to_json %>;
   var rrf_projects = <%= raw rrf_all_projects.map(&:reverse).to_h.to_json %>;
   var rrf_roles = <%= raw rrf_all_roles.map(&:reverse).to_h.to_json %>;
+  var rrf_current_edit_issue_required = null;
 
   function rrf_redraw_issue_required() {
     var table_body = '';
@@ -107,36 +117,66 @@
         '<td>' + $.map(data.tracker_ids, function(k, ix) {return rrf_trackers[k]}).join('<br>') + '</td>' +
         '<td>' + $.map(data.issue_status_ids, function(k, ix) {return rrf_issue_statuses[k]}).join('<br>') + '</td>' +
         '<td>' + $.map(data.role_ids, function(k, ix) {return rrf_roles[k]}).join('<br>') + '</td>' +
-        '<td>' + (data.role_excluded=="1" ? '<%= l('redmine_required_field.settings.exclude_roles') %>':'') + '<br>' +
-        (data.check_assignee_only=="1" ? '<%= l('redmine_required_field.settings.check_assignee_only') %>':'') +'<br>' + '</td>' +
-        '<td><a class="icon icon-del rrf_issue_required_delete" data-issue_required_index_id="' + ix + '">&nbsp;</a></td>' +
+        '<td>' + 
+          (data.role_excluded === '1' ? '<%= l('redmine_required_field.settings.exclude_roles') %>':'') + '<br>' +
+          (data.check_assignee_onlyi === '1' ? '<%= l('redmine_required_field.settings.check_assignee_only') %>':'') +'<br>' +
+        '</td>' +
+        '<td>' +
+          '<a class="icon icon-edit rrf_issue_required_edit" data-issue_required_index_id="' + ix + '">&nbsp;</a>' +
+          '<a class="icon icon-del rrf_issue_required_delete" data-issue_required_index_id="' + ix + '">&nbsp;</a>' +
+        '</td>' +
         '</tr>';
     });
 
     $('#settings_issue_required').val(JSON.stringify(rrf_current_issue_required));
     $('table#rrf_issue_required tbody').html(table_body);
 
+    $('#responsive_update_issue_required_cancel').hide();
+    $('#responsive_update_issue_required_update').hide();
+    $('#responsive_update_issue_required_add').show();
+
+    rrf_current_edit_issue_required = null;
+
     return false;
   }
 
-  function update_rrf_data() {
+  function rrf_add_new_issue_required() {
     var setting_project_ids = $('#rrf_responsive_setting_project_ids').val();
     var setting_tracker_ids = $('#rrf_responsive_setting_tracker_ids').val();
     var setting_issue_status_ids = $('#rrf_responsive_setting_issue_status_ids').val();
     var setting_role_ids = $('#rrf_responsive_setting_role_ids').val();
+    var setting_role_excluded = $('#rrf_responsive_setting_role_excluded').is(':checked') ? '1' : '0';
+    var setting_check_assignee_only = $('#rrf_responsive_setting_check_assignee_only').is(':checked') ? '1' : '0';
 
-    var setting_role_excluded = $('#role_excluded').is(':checked') ? "1" : "0";
-    var setting_check_assignee_only = $('#check_assignee_only').is(':checked') ? "1" : "0";
-
-    rrf_current_issue_required.push({
+    var new_data = {
       project_ids: (setting_project_ids || []),
       tracker_ids: (setting_tracker_ids || []),
       issue_status_ids: (setting_issue_status_ids || []),
       role_ids: (setting_role_ids || []),
       role_excluded: (setting_role_excluded),
       check_assignee_only: (setting_check_assignee_only)
-    });
+    };
 
+    if (rrf_current_edit_issue_required !== null) {
+      rrf_current_issue_required[rrf_current_edit_issue_required] = new_data;
+    } else {
+      rrf_current_issue_required.push(new_data);
+    }
+
+    rrf_redraw_issue_required();
+
+    return false;
+  }
+
+  function rrf_update_issue_required() {
+    rrf_add_new_issue_required();
+    rrf_current_edit_issue_required = null;
+
+    return false;
+  }
+
+  function rrf_cancel_update_issue_required() {
+    rrf_current_edit_issue_required = null;
     rrf_redraw_issue_required();
 
     return false;
@@ -144,7 +184,9 @@
 
 
   function rrf_setup_bindings() {
-    $(document).on('click', '#responsive_update', update_rrf_data);
+    $(document).on('click', '#responsive_update', rrf_add_new_issue_required);
+    $(document).on('click', '#responsive_update_issue_required_update', rrf_update_issue_required);
+    $(document).on('click', '#responsive_update_issue_required_cancel', rrf_cancel_update_issue_required);
 
     $(document).on('click', '.rrf_issue_required_delete', function(e) {
       var index_to_delete = $(this).data('issue_required_index_id');
@@ -153,6 +195,27 @@
 
       return false;
     });
+
+    $(document).on('click', '.rrf_issue_required_edit', function(e) {
+      var issue_required_to_edit = $(this).data('issue_required_index_id');
+      var current_settings = rrf_current_issue_required[issue_required_to_edit];
+      rrf_current_edit_issue_required = issue_required_to_edit;
+
+      $('#rrf_responsive_setting_project_ids').val(current_settings.project_ids);
+      $('#rrf_responsive_setting_tracker_ids').val(current_settings.tracker_ids);
+      $('#rrf_responsive_setting_issue_status_ids').val(current_settings.issue_status_ids);
+      $('#rrf_responsive_setting_role_ids').val(current_settings.role_ids);
+      $('#rrf_responsive_setting_role_excluded').prop('checked', (current_settings.role_excluded === '1'));
+      $('#rrf_responsive_setting_check_assignee_only').prop('checked', (current_settings.check_assignee_only === '1'));
+
+      $('#responsive_update_issue_required_update').show();
+      $('#responsive_update_issue_required_cancel').show();
+      $('#responsive_update_issue_required_add').hide();
+      $('.rrf_issue_required_delete').hide();
+
+      return false;
+    });
+
   }
 
   $(function() {
